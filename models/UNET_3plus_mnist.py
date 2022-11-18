@@ -166,15 +166,16 @@ def build(height, width, c_size):
     
     
     output = Convolution2D(filters=11, kernel_size=1, padding='valid', activation='tanh')(d1)
+    output_final = Activation("softmax")(output)
     
-    model = models.Model(inputs, output)
+    model = models.Model(inputs, output_final)
     
     return model
 
 #model = build(10, 32, 32, 1)
 model = build(height, width, 1)
-model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(0.001), metrics=['accuracy'])
-model.fit(combined, segmented, batch_size=25, epochs=5)
+#model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(0.001), metrics=['accuracy'])
+#model.fit(combined, segmented, batch_size=25, epochs=5)
 
 print(model.summary())
 
