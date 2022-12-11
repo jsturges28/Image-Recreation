@@ -14,6 +14,8 @@ import keras.backend as K
 import pickle
 import os
 import cv2
+import time
+from StopOnAccuracy import StopOnAccuracy
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.datasets import mnist
@@ -23,6 +25,7 @@ from tensorflow.keras.layers import Dense, MaxPooling2D, Flatten, \
     Convolution2D, Activation, Dropout, LSTM, \
     Convolution3D, MaxPooling3D, Conv2DTranspose, Conv3DTranspose, \
     Attention, Input, ZeroPadding2D, Cropping2D
+from keras.callbacks import History, EarlyStopping
 from keras.optimizers import Adam
 from math import ceil
 
@@ -47,13 +50,26 @@ def build(height, width, c_size):
     act1 = Activation('softmax')(conv3)
     
     return keras.Model(inputs = input_layer, outputs = act1)
+
+# Create an EarlyStopping callback that stops training when the training accuracy doesn't improve by 0.005 over 2 epochs
+
+callback = EarlyStopping(monitor='accuracy', patience=2, min_delta=0.005)
+
+# Create a StopOnAccuracy callback that stops training when the testing accuracy reaches 93%
+
+stop_on_accuracy = StopOnAccuracy(0.96)
     
 model = build(height, width, 1)
 
 print(model.summary())
 
 model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(0.001), metrics=['accuracy'])
-history = model.fit(combined, segmented, validation_split=0.33, batch_size=50, epochs=30)
+
+start_time = time.time()
+history = model.fit(combined, segmented, validation_split=0.33, batch_size=50, epochs=30, callbacks=[callback, stop_on_accuracy])
+end_time = time.time()
+tot_time = float("%.2f"%(end_time - start_time))
+
 
 def print_test(N_TEST, HEIGHT, WIDTH, combined_test, segmented_test, model):
     rand_index = np.random.randint(0,len(combined_test))
@@ -91,5 +107,11 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper right')
 plt.show()
+
+print("Epoch stopped at epoch", callback.stopped_epoch)
+#get number of epochs
+print("Number of epochs run:", len(history.history['accuracy']))
+print("Final testing accuracy:", float("%.4f"%history.history['val_accuracy'][-1]))
+print("Time to run model: ", tot_time, "seconds")
 
     
