@@ -27,8 +27,8 @@ import sys
 sys.path.append(os.getcwd()) # if we're in the main directory
 sys.path.append(os.path.dirname(os.getcwd())) # if we're in the models folder 
 
-import custom_callbacks
-from custom_callbacks import StopOnAccuracy
+import callbacks
+from callbacks import StopOnAccuracy
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.datasets import mnist
