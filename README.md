@@ -10,4 +10,4 @@ I will be training these models on a modified version of MNIST, a multidigit dat
 # Instructions
 - Donwload the combined and segmented datasets [here](https://www.kaggle.com/datasets/farhanhubble/multimnistm2nist?resource=download&select=segmented.npy). Extract them into the appropriate repository.
 - If you want to run through your terminal, you're given a list of arguments that you may invoke to help train your model:
-  - * **--epochs**: Specify number of training epochs.
+  - **--epochs**: Specify number of training epochs.
