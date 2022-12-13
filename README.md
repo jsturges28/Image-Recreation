@@ -23,5 +23,5 @@ I will be training these models on a modified version of MNIST, a multidigit dat
   - To edit the script file, download and install [nano text editor](https://www.nano-editor.org/download.php) and invoke ```nano script.sh``` in your terminal to edit the file. Change the higher number in the for loop to the desired amount of experiments to run.
 - The program will run the model and save the metrics into a .pkl file for each experiment, as well as plotting a figure comparing all of the previous runs by IOU-score, which is saved in a 'figures' folder. It will automatically create a 'results' folder that will hold the pickled files and a 'figures' folder that will hold the charts. The experimental index is automatically incremented to ensure uniqueness and ease finding the files you want.
 - The analytics.py file contains a few ways to extract average and maximum metrics for each model, as well as plotting the best models against one another in a single chart. You may choose to run this in your terminal as a standalone file.
-- ### TODO:
+  ### TODO:
   - [ ] add more analytics functionality.
