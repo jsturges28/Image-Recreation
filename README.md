@@ -32,3 +32,4 @@ I will be training these models on a modified version of MNIST, a multidigit dat
 - [ ] Format general filepath support for loading data
 - [ ] Add Dice/F1 metrics
 - [ ] Add additional callback support for IOU metrics
+- [ ] Add method to capture total time spent training on each epoch and add to analytics
