@@ -20,4 +20,4 @@ I will be training these models on a modified version of MNIST, a multidigit dat
   ## TODO:
   - [ ] Add argparse functionality for toggling analytics.
 - You may also wish to edit the script.sh file, which is a simple script that runs the model of your choosing for n amount of times.
-  - To edit the script file, download and install nano text editor and invoke '''nano script.sh''' to edit the file. Change the higher number in the for loop to the desired amount of experiments to run.
+  - To edit the script file, download and install nano text editor and invoke ```nano script.sh``` to edit the file. Change the higher number in the for loop to the desired amount of experiments to run.
