@@ -10,4 +10,12 @@ I will be training these models on a modified version of MNIST, a multidigit dat
 # Instructions
 - Donwload the combined and segmented datasets [here](https://www.kaggle.com/datasets/farhanhubble/multimnistm2nist?resource=download&select=segmented.npy). Extract them into the appropriate repository.
 - If you want to run through your terminal, you're given a list of arguments that you may invoke to help train your model:
-  - **--epochs**: Specify number of training epochs.
+  - **--epochs**: Specify number of training epochs. Default: 20.
+  - **--val_acc**: Specify max accuracy before model stops training (Binary accuracy only). Default: 0.95.
+  - **--min_delta**: Specify minimum training accuracy improvement for each epoch. Default: 0.005.
+  - **--batch_size**: Specify size of batch per epoch. Default: 50.
+  - **--no_display**: Skip displaying set of learning curve(s)/don't save figures after running experiment(s). Default: False.
+  - **--no_results**: Skip predicting values and dont display the handwritten digits. Default: False.
+  - **--no_verbose**: Skip the training progress display and don't print results to screen. Default: False.
+  ## TODO:
+  - [ ] Add argparse functionality for toggling analytics.
