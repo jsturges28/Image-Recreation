@@ -3,6 +3,7 @@ Jacob Sturges, ID 112918980, Fall 2022
 This is a repository for the DSA 5900 Professional Practice course. To align with the goals of the course, I have developed several models in order to analyze their accuracy against one another. 
 # Contents
 This repo contains the following:
+* **Vanilla CNN**: A shallow CNN used to act as a reference (control). Contains ~7k parameters.
 * **UNET**: A slighty modified UNET model that contains ~469k parameters. [Source](https://link.springer.com/content/pdf/10.1007/978-3-319-24574-4_28.pdf)
 * **UNET 3+**: A highly modified UNET 3+ model that contains ~4 million parameters. [Source](https://ieeexplore.ieee.org/stampPDF/getPDF.jsp?tp=&arnumber=9053405&ref=aHR0cHM6Ly9pZWVleHBsb3JlLmllZWUub3JnL2Fic3RyYWN0L2RvY3VtZW50LzkwNTM0MDU=&tag=1)
 # Objectives
