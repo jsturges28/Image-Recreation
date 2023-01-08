@@ -39,8 +39,7 @@ import sys
 sys.path.append(os.getcwd()) # if we're in the main directory
 sys.path.append(os.path.dirname(os.getcwd())) # if we're in the models folder 
 
-import callbacks
-from callbacks import StopOnAccuracy
+from StopOnAccuracy import StopOnAccuracy
 
 # Go one level up if we're in the models folder 
 
@@ -65,7 +64,7 @@ def get_last_exp_index(path, folder):
             digits = []
 
             for file in files:
-                file_matches = re.findall(r'.*VanillaCNN.*', file)
+                file_matches = re.findall(r'.*UNET3Plus.*', file)
                 matches.extend(file_matches)
             matches.sort()
             
@@ -93,7 +92,7 @@ def create_parser():
     Creates an argument parser for the program to run in command line. Can also run in program if no specification is needed.
     '''
     
-    parser = argparse.ArgumentParser(description='Vanilla CNN')
+    parser = argparse.ArgumentParser(description='UNET 3 Plus')
     
     parser.add_argument('--exp', type=int, nargs='?', const=last_index, default=last_index, help='Experimental index')
     parser.add_argument('--epochs', type=int, nargs='?', const=20, default=20, help='Number of training epochs')
@@ -113,7 +112,7 @@ def args2string(args):
     
     :param args: Command line arguments
     '''
-    return "exp_%02d_UNET3Plus"%(args.exp)
+    return "exp_%02d_U3P"%(args.exp)
     
 
 def display_iou_set(path, folder):
@@ -128,7 +127,7 @@ def display_iou_set(path, folder):
         matches = []
 
         for file in files:
-            file_matches = re.findall(r'.*UNET3Plus.*', file)
+            file_matches = re.findall(r'.*U3P.*', file)
             matches.extend(file_matches)
         matches.sort()
         
@@ -153,10 +152,10 @@ parser = create_parser()
 args = parser.parse_args()
 
 train, test = (.9, .1)
-segmented = np.load('.\\segmented\\segmented.npy')
+segmented = np.load('segmented/segmented.npy')
 _, height, width, c_size = segmented.shape
 
-combined=np.load('.\\combined\\combined.npy')
+combined=np.load('combined/combined.npy')
 
 train_data = combined[:int(len(combined)*train),:,:]
 train_label = segmented[:int(len(combined)*train),:,:,:]
@@ -165,13 +164,13 @@ test_label = segmented[int(len(combined)*train):,:,:,:]
 
 
 def encoder_block(inputs, n_filters, kernel_size, strides):
-    encoder = ZeroPadding2D(padding=5, input_shape=inputs.shape)(inputs)
-    encoder = Convolution2D(filters=n_filters, kernel_size=kernel_size, strides=strides, padding='valid', use_bias=False)(encoder)
-    encoder = BatchNormalization()(encoder)
-    encoder = Activation(activations.gelu)(encoder)
-    encoder = Convolution2D(filters=n_filters, kernel_size=kernel_size, padding='valid', use_bias=False)(encoder)
-    encoder = BatchNormalization()(encoder)
-    encoder = Activation(activations.gelu)(encoder)
+    #encoder = ZeroPadding2D(padding=5, input_shape=inputs.shape)(inputs)
+    encoder = Convolution2D(filters=n_filters, kernel_size=kernel_size, strides=strides, padding='same')(inputs)
+    #encoder = BatchNormalization()(encoder)
+    encoder = Activation(activations.relu)(encoder)
+    encoder = Convolution2D(filters=n_filters, kernel_size=kernel_size, padding='same')(encoder)
+    #encoder = BatchNormalization()(encoder)
+    encoder = Activation(activations.relu)(encoder)
     #encoder = MaxPooling2D(pool_size=(2,2), strides=(2,2)))(encoder)
     return encoder
 
@@ -181,12 +180,12 @@ def upscale_blocks(inputs):
     
     for i, inp in enumerate(inputs):
         p = n_upscales - i
-        u = Conv2DTranspose(filters=64, kernel_size=3, strides=2**p, padding='valid')(inp)
+        u = Conv2DTranspose(filters=64, kernel_size=3, strides=2**p, padding='same')(inp)
         
         for i in range(2):
-            u = Convolution2D(filters=64, kernel_size=3, padding='valid', use_bias=False)(u)
-            u = BatchNormalization()(u)
-            u = Activation(activations.gelu)(u)
+            u = Convolution2D(filters=64, kernel_size=3, padding='same')(u)
+            #u = BatchNormalization()(u)
+            u = Activation(activations.relu)(u)
             
         upscale_layers.append(u)
     return upscale_layers
@@ -197,12 +196,12 @@ def decoder_block(layers_to_upscale, inputs):
     decoder_blocks = []
 
     for i, inp in enumerate(inputs):
-        d = Convolution2D(filters=64, kernel_size=3, strides=2**i, padding='valid', use_bias=False)(inp)
-        d = BatchNormalization()(d)
-        d = Activation(activations.gelu)(d)
-        d = Convolution2D(filters=64, kernel_size=3, padding='valid', use_bias=False)(d)
-        d = BatchNormalization()(d)
-        d = Activation(activations.gelu)(d)
+        d = Convolution2D(filters=64, kernel_size=3, strides=2**i, padding='same')(inp)
+        #d = BatchNormalization()(d)
+        d = Activation(activations.relu)(d)
+        d = Convolution2D(filters=64, kernel_size=3, padding='same')(d)
+        #d = BatchNormalization()(d)
+        d = Activation(activations.relu)(d)
 
         decoder_blocks.append(d)
         
@@ -267,9 +266,9 @@ def decoder_block(layers_to_upscale, inputs):
                 
                 
     decoder = layers.concatenate(upscaled_layers + decoder_blocks)
-    decoder = Convolution2D(filters=256, kernel_size=3, padding='valid', use_bias=False)(decoder)
-    decoder = BatchNormalization()(decoder)
-    decoder = Activation(activations.gelu)(decoder)
+    decoder = Convolution2D(filters=256, kernel_size=3, padding='same')(decoder)
+    #decoder = BatchNormalization()(decoder)
+    decoder = Activation(activations.relu)(decoder)
 
     return decoder
 
@@ -296,7 +295,7 @@ def build(height, width, c_size):
     
     
     
-    output = Convolution2D(filters=11, kernel_size=1, padding='valid', activation='tanh')(d1)
+    output = Convolution2D(filters=11, kernel_size=1, padding='same')(d1)
     output_final = Activation("softmax")(output)
     
     model = models.Model(inputs, output_final)
@@ -332,11 +331,11 @@ if not os.path.exists(os.path.join(path, "results")):
 
 res_path = os.path.join(path, "results")
     
-fp = open("results\\results_%s.pkl"%(argstring), "wb")
+fp = open("%s/results_%s.pkl"%(res_path, argstring), "wb")
 pickle.dump(history.history, fp)
 #pickle.dump(args, fp)
-fp.write(b"\n")
-pickle.dump(tot_time, fp)
+#fp.write(b"\n")
+#pickle.dump(tot_time, fp)
 fp.close()
 
 def print_test(N_TEST, HEIGHT, WIDTH, combined_test, segmented_test, model):
@@ -350,7 +349,7 @@ def print_test(N_TEST, HEIGHT, WIDTH, combined_test, segmented_test, model):
     predicted = np.round(predicted).astype(int)
     maxi = np.argmax(predicted[0], axis=2)
     plt.figure(figsize=(8, 11))
-    plt.suptitle('Vanilla CNN image recreations on 3 random images')
+    plt.suptitle('UNET 3 Plus image recreations on 3 random images')
     for i in range(N_TEST):
         plt.subplot(4, N_TEST, i+1)
         plt.imshow(originals[i].reshape((HEIGHT, WIDTH)))
