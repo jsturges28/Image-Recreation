@@ -1,4 +1,3 @@
-Jacob Sturges, ID 112918980, Fall 2022
 # Overview
 This is a repository for the DSA 5900 Professional Practice course. To align with the goals of the course, I have developed several models in order to analyze their accuracy against one another. 
 # Contents
